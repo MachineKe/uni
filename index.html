@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canadian Universities</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 100%;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow-x: auto; /* Enable horizontal scrolling on smaller screens */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #8b4513; /* Brown color for header */
+            color: #fff; /* White text color for header */
+        }
+        tr:nth-child(even) {
+            background-color: #fff; /* White color for even rows */
+        }
+        tr:nth-child(odd) {
+            background-color: #f9f9f9; /* Light brown color for odd rows */
+        }
+        @media only screen and (max-width: 600px) {
+            /* Responsive design for smaller screens */
+            .container {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Canadian Universities</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Link</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <!-- Data will be inserted here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Function to fetch CSV data and populate the table with Canadian universities only
+        async function fetchCanadianUniversities() {
+            const response = await fetch('./world-universities.csv');
+            const data = await response.text();
+            const rows = data.split('\n').slice(1); // Split data by newline and skip header
+
+            const tableBody = document.getElementById('table-body');
+            let counter = 1; // Initialize the counter for numbering
+
+            rows.forEach(row => {
+                const columns = row.split(',');
+                const country = columns[0] ? columns[0].trim() : '';
+                const universityName = columns[1] ? columns[1].trim() : '';
+                const link = columns[2] ? columns[2].trim() : '';
+
+                if (country.toLowerCase() === 'ca') {
+                    const tr = document.createElement('tr');
+                    const numberTd = document.createElement('td');
+                    const nameTd = document.createElement('td');
+                    const linkTd = document.createElement('td');
+                    const linkElement = document.createElement('a');
+
+                    // Set the text content of the number cell to the current counter value
+                    numberTd.textContent = counter;
+
+                    linkElement.href = link;
+                    linkElement.textContent = universityName;
+
+                    nameTd.appendChild(linkElement);
+                    linkTd.innerHTML = `<a href="${link}" target="_blank">Link</a>`;
+
+                    tr.appendChild(numberTd);
+                    tr.appendChild(nameTd);
+                    tr.appendChild(linkTd);
+
+                    tableBody.appendChild(tr);
+
+                    // Increment the counter for the next university
+                    counter++;
+                }
+            });
+        }
+
+        // Call the function when the page loads
+        window.onload = fetchCanadianUniversities;
+    </script>
+</body>
+</html>
